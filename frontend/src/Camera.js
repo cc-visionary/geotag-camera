@@ -52,6 +52,7 @@ const Camera = () => {
     const { absolute, alpha, beta, gamma } = event;
 
     console.log(absolute, alpha, beta, gamma);
+    setOutput(`${absolute} - ${alpha} - ${beta} - ${gamma}`);
   };
 
   const calcDegreeToPoint = (latitude, longitude) => {
@@ -85,15 +86,7 @@ const Camera = () => {
 
     setCoords([latitude, longitude]);
     setDegree(pointDegree);
-  };
-
-  const success = (pos) => {
-    var crd = pos.coords;
-
-    console.log("Your current position is:");
-    console.log(`Latitude : ${crd.latitude}`);
-    console.log(`Longitude: ${crd.longitude}`);
-    console.log(`More or less ${crd.accuracy} meters.`);
+    setOutput(`Successfully extracted location`);
   };
 
   const errors = (err) => {
@@ -114,9 +107,13 @@ const Camera = () => {
           if (result.state === "granted") {
             console.log(result.state);
             //If granted then you can directly call your function here
-            navigator.geolocation.getCurrentPosition(success);
+            navigator.geolocation.getCurrentPosition(handleLocation);
           } else if (result.state === "prompt") {
-            navigator.geolocation.getCurrentPosition(success, errors, options);
+            navigator.geolocation.getCurrentPosition(
+              handleLocation,
+              errors,
+              options
+            );
             console.log(result.state);
           } else if (result.state === "denied") {
             //If denied then you have to show instructions to enable location
@@ -174,6 +171,8 @@ const Camera = () => {
         <p>
           {coords[0]}, {coords[1]}
         </p>
+        <h4>Degree:</h4>
+        <p>{degree}</p>
         <button onClick={() => startCompass()}>Start Compass</button>
       </div>
     ) : (
