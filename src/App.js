@@ -1,25 +1,48 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import Camera from "./Camera";
+
+import "./App.css";
+
+export default class App extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      alpha: null,
+      beta: null,
+      gama: null,
+    };
+  }
+
+  componentDidMount = () => {
+    // https://dev.to/orkhanjafarovr/real-compass-on-mobile-browsers-with-javascript-3emi
+    if (window.DeviceOrientationEvent) {
+      window.addEventListener("deviceorientation", (e) => {
+        this.setState({ alpha: e.alpha, beta: e.beta, gamma: e.gamma });
+      }, true);
+    } else {
+      alert("Sorry, your browser doesn't support Device Orientation");
+    }
+  };
+
+  render() {
+    const { alpha, beta, gamma } = this.state;
+
+    return (
+      <div id="app">
+        <Camera />
+        {alpha && beta && gamma ? (
+          <div>
+            <h4>Orientation</h4>
+            <p>Alpha: {alpha}</p>
+            <p>Beta: {beta}</p>
+            <p>Gamma: {gamma}</p>
+          </div>
+        ) : (
+          <></>
+        )}
+      </div>
+    );
+  }
 }
-
-export default App;
