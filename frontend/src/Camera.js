@@ -50,9 +50,9 @@ const Camera = () => {
 
   const handleOrientation = (event) => {
     const { absolute, alpha, beta, gamma } = event;
+    const compass = event.webkitCompassHeading || Math.abs(alpha - 360);
 
-    console.log(absolute, alpha, beta, gamma);
-    setOutput(`${absolute} - ${alpha} - ${beta} - ${gamma}`);
+    setOutput(`Compass Direction: ${compass}`);
   };
 
   const calcDegreeToPoint = (latitude, longitude) => {
