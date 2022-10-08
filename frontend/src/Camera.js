@@ -148,10 +148,12 @@ const Camera = () => {
               true
             );
           } else {
-            alert("has to be allowed!");
+            alert("Has to be allowed!");
           }
         })
-        .catch(() => alert("not supported"));
+        .catch(() => alert("Not supported"));
+    } else {
+      alert('Not Supported')
     }
   };
 
