@@ -9,7 +9,7 @@ const Camera = () => {
 
   useEffect(() => {
     getDevice();
-    getLocation();
+    startCompass();
   }, []);
 
   const handleCapture = (target) => {
@@ -17,6 +17,8 @@ const Camera = () => {
       if (target.files.length !== 0) {
         const file = target.files[0];
         const newUrl = URL.createObjectURL(file);
+
+        getLocation();
       }
     }
   };
@@ -145,42 +147,40 @@ const Camera = () => {
         })
         .catch(() => alert("Not supported"));
     } else {
-      alert('Not Supported')
+      alert("Not Supported");
     }
   };
 
-  return isGeolocationAvailable ? (
-    coords ? (
-      <div>
-        <p>Device Type: {deviceType}</p>
-        <p>User Agent: {navigator.userAgent}</p>
-        <input
-          accept="image/*"
-          id="icon-button-file"
-          type="file"
-          capture="environment"
-          onChange={(e) => handleCapture(e.target)}
-        />
-        <h4>Coords:</h4>
-        <p>
-          {coords[0]}, {coords[1]}
-        </p>
-        <h4>Degree:</h4>
-        <p>{degree}</p>
-        <button onClick={() => startCompass()}>Start Compass</button>
-        <div>{output}</div>
-      </div>
-    ) : (
-      <div>
-        <h4>Geolocation is not enabled</h4>
-        <button onClick={() => getLocation()}>Try Again</button>
-        <div>{output}</div>
-      </div>
-    )
-  ) : (
+  return (
     <div>
-      <h4>Geolocation is not available on your device</h4>
-        <div>{output}</div>
+      <p>Device Type: {deviceType}</p>
+      <input
+        accept="image/*"
+        id="icon-button-file"
+        type="file"
+        capture="environment"
+        onChange={(e) => handleCapture(e.target)}
+      />
+      {coords ? (
+        <div>
+          <h4>Coords:</h4>
+          <p>
+            {coords.longitude}, {coords.longitude}
+          </p>
+        </div>
+      ) : (
+        <div>Coords not available</div>
+      )}
+      {degree ? (
+        <div>
+          <h4>Degree:</h4>
+          <p>{degree}</p>
+        </div>
+      ) : (
+        <div>Compass direction not available</div>
+      )}
+
+      <div>{output}</div>
     </div>
   );
 };
