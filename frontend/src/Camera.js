@@ -127,14 +127,6 @@ const Camera = () => {
     } else {
       setIsGeolocationAvailable(false);
     }
-
-    if (deviceType !== "Mobile") {
-      window.addEventListener(
-        "deviceorientationabsolute",
-        handleLocation,
-        true
-      );
-    }
   };
 
   const startCompass = () => {
