@@ -174,6 +174,7 @@ const Camera = () => {
         <h4>Degree:</h4>
         <p>{degree}</p>
         <button onClick={() => startCompass()}>Start Compass</button>
+        <div>{output}</div>
       </div>
     ) : (
       <div>
@@ -185,6 +186,7 @@ const Camera = () => {
   ) : (
     <div>
       <h4>Geolocation is not available on your device</h4>
+        <div>{output}</div>
     </div>
   );
 };
