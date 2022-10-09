@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 /**
  * Based from https://dev.to/orkhanjafarovr/real-compass-on-mobile-browsers-with-javascript-3emi
@@ -11,6 +11,7 @@ const Camera = () => {
   const [imageSrc, setImageSrc] = useState(null);
   const [coords, setCoords] = useState(false);
   const [output, setOutput] = useState(null);
+  const [compass, setCompass] = useState(null);
   const [degree, setDegree] = useState(null);
   const [deviceType, setDeviceType] = useState("Desktop");
 
@@ -25,8 +26,7 @@ const Camera = () => {
         const newUrl = URL.createObjectURL(file);
 
         setImageSrc(newUrl);
-  
-        window.removeEventListener("deviceorientation", handleOrientation);
+        setDegree(compass)
         getLocation();
       }
     }
@@ -62,16 +62,14 @@ const Camera = () => {
 
   const handleLocation = (position) => {
     setCoords(position.coords);
-
-    startCompass();
   };
 
-  const handleOrientation = useCallback((event) => {
+  const handleOrientation = (event) => {
     const { alpha } = event;
     const compass = event.webkitCompassHeading || Math.abs(alpha - 360);
 
-    setDegree(compass);
-  }, [setDegree]);
+    setCompass(compass);
+  };
 
   const errors = (err) => {
     setOutput(`ERROR(${err.code}): ${err.message}`);
