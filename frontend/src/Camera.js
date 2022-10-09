@@ -69,8 +69,6 @@ const Camera = () => {
     const compass = event.webkitCompassHeading || Math.abs(alpha - 360);
 
     setDegree(compass);
-    
-    window.removeEventListener("deviceorientation", (event))
   };
 
   const errors = (err) => {
@@ -115,11 +113,8 @@ const Camera = () => {
 
   const startCompass = () => {
     if (deviceType === "Mobile") {
-      window.addEventListener(
-        "deviceorientation",
-        handleOrientation,
-        true
-      );
+      window.addEventListener("deviceorientation", handleOrientation);
+      window.removeEventListener("deviceorientation", handleOrientation);
     } else {
       alert("Not Supported");
     }
@@ -129,12 +124,12 @@ const Camera = () => {
     setCoords(null);
     setDegree(null);
     setImageSrc(null);
-  }
+  };
 
   return (
     <div>
       <p>Device Type: {deviceType}</p>
-      <image src={imageSrc} alt="No Uploaded Image" height='500' />
+      <image src={imageSrc} alt="No Uploaded Image" height="500" />
       <input
         accept="image/*"
         id="icon-button-file"
