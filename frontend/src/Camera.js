@@ -113,27 +113,11 @@ const Camera = () => {
 
   const startCompass = () => {
     if (deviceType === "Mobile") {
-      DeviceOrientationEvent.requestPermission()
-        .then((response) => {
-          if (response === "granted") {
-            window.addEventListener(
-              "deviceorientation",
-              handleOrientation,
-              true
-            );
-            window.removeEventListener(
-              "deviceorientation",
-              handleOrientation,
-              true
-            );
-          } else {
-            alert("Has to be allowed!");
-          }
-        })
-        .catch((error) => {
-          setOutput(error);
-          alert("Not supported");
-        });
+      window.addEventListener(
+        "deviceorientation",
+        handleOrientation,
+        true
+      );
     } else {
       alert("Not Supported");
     }
