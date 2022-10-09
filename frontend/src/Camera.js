@@ -67,7 +67,6 @@ const Camera = () => {
 
   const handleLocation = (position) => {
     setCoords(position.coords);
-    setOutput(`Successfully extracted location`);
 
     startCompass();
   };
@@ -169,7 +168,7 @@ const Camera = () => {
       ) : (
         <div>Compass direction not available</div>
       )}
-
+      <button onClick={() => startCompass()}>Start Compass</button>
       <div>{output}</div>
     </div>
   );
