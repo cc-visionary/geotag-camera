@@ -8,16 +8,10 @@ export default class App extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      alpha: null,
-      beta: null,
-      gama: null,
-    };
+    this.state = {};
   }
 
   render() {
-    const { alpha, beta, gamma } = this.state;
-
     return (
       <div id="app">
         <Camera />

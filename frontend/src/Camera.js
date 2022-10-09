@@ -1,7 +1,14 @@
 import React, { useEffect, useState } from "react";
 
+/**
+ * Based from https://dev.to/orkhanjafarovr/real-compass-on-mobile-browsers-with-javascript-3emi
+ *
+ * Customized by: Christopher Lim
+ */
+
 const Camera = () => {
   const [isGeolocationAvailable, setIsGeolocationAvailable] = useState(false);
+  const [imageSrc, setImageSrc] = useState(null);
   const [coords, setCoords] = useState(false);
   const [output, setOutput] = useState(null);
   const [degree, setDegree] = useState(null);
@@ -17,6 +24,8 @@ const Camera = () => {
       if (target.files.length !== 0) {
         const file = target.files[0];
         const newUrl = URL.createObjectURL(file);
+
+        setImageSrc(newUrl);
 
         getLocation();
       }
@@ -51,43 +60,14 @@ const Camera = () => {
   };
 
   const handleOrientation = (event) => {
-    const { absolute, alpha, beta, gamma } = event;
+    const { alpha } = event;
     const compass = event.webkitCompassHeading || Math.abs(alpha - 360);
 
-    setOutput(`Compass Direction: ${compass}`);
-  };
-
-  const calcDegreeToPoint = (latitude, longitude) => {
-    // Qibla geolocation
-    const point = {
-      lat: 21.422487,
-      lng: 39.826206,
-    };
-
-    const phiK = (point.lat * Math.PI) / 180.0;
-    const lambdaK = (point.lng * Math.PI) / 180.0;
-    const phi = (latitude * Math.PI) / 180.0;
-    const lambda = (longitude * Math.PI) / 180.0;
-    const psi =
-      (180.0 / Math.PI) *
-      Math.atan2(
-        Math.sin(lambdaK - lambda),
-        Math.cos(phi) * Math.tan(phiK) -
-          Math.sin(phi) * Math.cos(lambdaK - lambda)
-      );
-    return Math.round(psi);
+    setDegree(compass);
   };
 
   const handleLocation = (position) => {
-    const { latitude, longitude } = position.coords;
-    let pointDegree = calcDegreeToPoint(latitude, longitude);
-
-    if (pointDegree < 0) {
-      pointDegree = pointDegree + 360;
-    }
-
-    setCoords([latitude, longitude]);
-    setDegree(pointDegree);
+    setCoords(position.coords);
     setOutput(`Successfully extracted location`);
   };
 
@@ -141,6 +121,11 @@ const Camera = () => {
               handleOrientation,
               true
             );
+            window.removeEventListener(
+              "deviceorientation",
+              handleOrientation,
+              true
+            );
           } else {
             alert("Has to be allowed!");
           }
@@ -154,6 +139,7 @@ const Camera = () => {
   return (
     <div>
       <p>Device Type: {deviceType}</p>
+      <image src={imageSrc} alt='No Uploaded Image' />
       <input
         accept="image/*"
         id="icon-button-file"
