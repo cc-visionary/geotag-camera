@@ -16,7 +16,6 @@ const Camera = () => {
 
   useEffect(() => {
     getDevice();
-    startCompass();
   }, []);
 
   const handleCapture = (target) => {
@@ -69,6 +68,8 @@ const Camera = () => {
   const handleLocation = (position) => {
     setCoords(position.coords);
     setOutput(`Successfully extracted location`);
+
+    startCompass();
   };
 
   const errors = (err) => {
