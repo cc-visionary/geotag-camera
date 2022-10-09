@@ -16,6 +16,7 @@ const Camera = () => {
 
   useEffect(() => {
     getDevice();
+    startCompass();
   }, []);
 
   const handleCapture = (target) => {
@@ -25,7 +26,8 @@ const Camera = () => {
         const newUrl = URL.createObjectURL(file);
 
         setImageSrc(newUrl);
-
+  
+        window.removeEventListener("deviceorientation", handleOrientation);
         getLocation();
       }
     }
@@ -114,7 +116,6 @@ const Camera = () => {
   const startCompass = () => {
     if (deviceType === "Mobile") {
       window.addEventListener("deviceorientation", handleOrientation);
-      window.removeEventListener("deviceorientation", handleOrientation);
     } else {
       alert("Not Supported");
     }
@@ -155,7 +156,6 @@ const Camera = () => {
       ) : (
         <div>Compass direction not available</div>
       )}
-      <button onClick={() => startCompass()}>Start Compass</button>
       <div>{output}</div>
       <button onClick={() => resetData()}>Reset</button>
     </div>
