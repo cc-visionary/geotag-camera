@@ -114,11 +114,7 @@ const Camera = () => {
   };
 
   const startCompass = () => {
-    if (deviceType === "Mobile") {
-      window.addEventListener("deviceorientation", handleOrientation);
-    } else {
-      alert("Not Supported");
-    }
+    window.addEventListener("deviceorientation", handleOrientation);
   };
 
   const resetData = () => {
