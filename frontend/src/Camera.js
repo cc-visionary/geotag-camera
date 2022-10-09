@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 /**
  * Based from https://dev.to/orkhanjafarovr/real-compass-on-mobile-browsers-with-javascript-3emi
@@ -66,12 +66,12 @@ const Camera = () => {
     startCompass();
   };
 
-  const handleOrientation = (event) => {
+  const handleOrientation = useCallback((event) => {
     const { alpha } = event;
     const compass = event.webkitCompassHeading || Math.abs(alpha - 360);
 
     setDegree(compass);
-  };
+  }, [setDegree]);
 
   const errors = (err) => {
     setOutput(`ERROR(${err.code}): ${err.message}`);
@@ -126,7 +126,7 @@ const Camera = () => {
   return (
     <div>
       <p>Device Type: {deviceType}</p>
-      <image src={imageSrc} alt="No Uploaded Image" height="500" />
+      <img src={imageSrc} alt="No Uploaded Image" height="500" />
       <input
         accept="image/*"
         id="icon-button-file"
