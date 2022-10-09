@@ -131,7 +131,10 @@ const Camera = () => {
             alert("Has to be allowed!");
           }
         })
-        .catch(() => alert("Not supported"));
+        .catch((error) => {
+          setOutput(error);
+          alert("Not supported");
+        });
     } else {
       alert("Not Supported");
     }
@@ -140,7 +143,7 @@ const Camera = () => {
   return (
     <div>
       <p>Device Type: {deviceType}</p>
-      <image src={imageSrc} alt='No Uploaded Image' />
+      <image src={imageSrc} alt="No Uploaded Image" />
       <input
         accept="image/*"
         id="icon-button-file"
@@ -152,7 +155,7 @@ const Camera = () => {
         <div>
           <h4>Coords:</h4>
           <p>
-            {coords.longitude}, {coords.longitude}
+            {coords.longitude}, {coords.latitude}
           </p>
         </div>
       ) : (
