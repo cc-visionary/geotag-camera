@@ -58,17 +58,19 @@ const Camera = () => {
     }
   };
 
+  const handleLocation = (position) => {
+    setCoords(position.coords);
+
+    startCompass();
+  };
+
   const handleOrientation = (event) => {
     const { alpha } = event;
     const compass = event.webkitCompassHeading || Math.abs(alpha - 360);
 
     setDegree(compass);
-  };
-
-  const handleLocation = (position) => {
-    setCoords(position.coords);
-
-    startCompass();
+    
+    window.removeEventListener("deviceorientation", (event))
   };
 
   const errors = (err) => {
@@ -123,10 +125,16 @@ const Camera = () => {
     }
   };
 
+  const resetData = () => {
+    setCoords(null);
+    setDegree(null);
+    setImageSrc(null);
+  }
+
   return (
     <div>
       <p>Device Type: {deviceType}</p>
-      <image src={imageSrc} alt="No Uploaded Image" />
+      <image src={imageSrc} alt="No Uploaded Image" height='500' />
       <input
         accept="image/*"
         id="icon-button-file"
@@ -154,6 +162,7 @@ const Camera = () => {
       )}
       <button onClick={() => startCompass()}>Start Compass</button>
       <div>{output}</div>
+      <button onClick={() => resetData()}>Reset</button>
     </div>
   );
 };
