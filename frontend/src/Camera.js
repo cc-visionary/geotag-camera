@@ -16,7 +16,6 @@ const Camera = () => {
 
   useEffect(() => {
     getDevice();
-    startCompass();
   }, []);
 
   const handleCapture = (target) => {
@@ -55,6 +54,7 @@ const Camera = () => {
     }
     if (hasTouchScreen) {
       setDeviceType("Mobile");
+      startCompass();
     } else {
       setDeviceType("Desktop");
     }
