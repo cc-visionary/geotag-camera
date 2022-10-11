@@ -156,6 +156,8 @@ const Camera = () => {
         <div>Compass direction not available</div>
       )}
       <div>{output}</div>
+      <div>Compass Direction: {compass}</div>
+      <button onClick={() => startCompass()}>Start Compass</button>
       <button onClick={() => resetData()}>Reset</button>
     </div>
   );
