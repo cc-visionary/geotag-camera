@@ -16,8 +16,9 @@ const Camera = () => {
   const [deviceType, setDeviceType] = useState("Desktop");
 
   useEffect(() => {
-    getLocation();
     getDevice();
+    getLocation();
+    startCompass();
   }, []);
 
   const handleCapture = (target) => {
@@ -57,10 +58,8 @@ const Camera = () => {
     }
     if (hasTouchScreen) {
       setDeviceType("Mobile");
-      startCompass();
     } else {
       setDeviceType("Desktop");
-      alert('Device Orientation (compass) not available');
     }
   };
 
