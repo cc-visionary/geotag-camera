@@ -16,6 +16,7 @@ const Camera = () => {
   const [deviceType, setDeviceType] = useState("Desktop");
 
   useEffect(() => {
+    getLocation();
     getDevice();
   }, []);
 
