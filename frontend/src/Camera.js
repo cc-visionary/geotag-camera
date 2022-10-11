@@ -25,6 +25,8 @@ const Camera = () => {
         const file = target.files[0];
         const newUrl = URL.createObjectURL(file);
 
+        alert(`Degree when camera was taken: ${compass}`)
+
         setImageSrc(newUrl);
         setDegree(compass)
         getLocation();
@@ -57,10 +59,12 @@ const Camera = () => {
       startCompass();
     } else {
       setDeviceType("Desktop");
+      alert('Device Orientation (compass) not available');
     }
   };
 
   const handleLocation = (position) => {
+    alert(`Geolocation: ${position.coords}`)
     setCoords(position.coords);
   };
 
@@ -131,6 +135,7 @@ const Camera = () => {
         type="file"
         capture="environment"
         onChange={(e) => handleCapture(e.target)}
+        disabled={deviceType === 'Desktop'}
       />
       {coords ? (
         <div>
