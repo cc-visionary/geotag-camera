@@ -117,7 +117,19 @@ const Camera = () => {
   };
 
   const startCompass = () => {
-    window.addEventListener("deviceorientation", handleOrientation);
+    if (deviceType === 'Mobile') {
+      DeviceOrientationEvent.requestPermission()
+        .then((response) => {
+          if (response === "granted") {
+            window.addEventListener("deviceorientation", handleOrientation, true);
+          } else {
+            alert("Device Orientation has to be allowed to get the compass direction!");
+          }
+        })
+        .catch(() => alert("Does not support device orientation..."));
+    } else {
+      window.addEventListener("deviceorientationabsolute", handleOrientation, true);
+    }
   };
 
   const resetData = () => {
