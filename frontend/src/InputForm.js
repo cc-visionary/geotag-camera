@@ -246,7 +246,7 @@ const InputForm = () => {
             setLatitude={setLatitude}
             compassValue={compassValue}
             setCompass={setCompass}
-            disabled={cameraPermission && locationPermission && deviceOrientationPermission}
+            disabled={!(cameraPermission && locationPermission && deviceOrientationPermission)}
           />
         </div>
       </div>

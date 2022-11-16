@@ -14,11 +14,6 @@ const Camera = ({
   setCompass,
   disabled,
 }) => {
-  useEffect(() => {
-    setCompass(compassValue);
-    console.log(compassValue);
-  }, [compassValue]);
-
   const handleCapture = (target) => {
     if (target.files) {
       if (target.files.length !== 0) {
@@ -52,7 +47,6 @@ const Camera = ({
         .query({ name: "geolocation" })
         .then(function (result) {
           if (result.state === "granted") {
-            console.log(result.state);
             //If granted then you can directly call your function here
             navigator.geolocation.getCurrentPosition(handleLocation);
           } else if (result.state === "prompt") {
@@ -61,7 +55,6 @@ const Camera = ({
               errors,
               options
             );
-            console.log(result.state);
           } else if (result.state === "denied") {
             //If denied then you have to show instructions to enable location
             console.log(result.state);
