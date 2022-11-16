@@ -1,0 +1,25 @@
+#stepper {
+  
+}
+
+#stepper .steps {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin: 25px 25px;
+}
+
+#stepper .steps .back {
+  flex: 1;
+}
+
+#stepper .steps .step {
+  flex: 4;
+  margin: 0 5px;
+  text-align: left;
+}
+
+#stepper .steps .step hr {
+  border: 2px solid #000;
+}

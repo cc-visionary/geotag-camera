@@ -6,20 +6,18 @@ import React, { useEffect, useState } from "react";
  * Customized by: Christopher Lim
  */
 
-const Camera = () => {
-  const [isGeolocationAvailable, setIsGeolocationAvailable] = useState(false);
-  const [imageSrc, setImageSrc] = useState(null);
-  const [coords, setCoords] = useState(false);
-  const [output, setOutput] = useState(null);
-  const [compass, setCompass] = useState(null);
-  const [degree, setDegree] = useState(null);
-  const [deviceType, setDeviceType] = useState("Desktop");
-
+const Camera = ({
+  setImage,
+  setLongitude,
+  setLatitude,
+  compassValue,
+  setCompass,
+  disabled,
+}) => {
   useEffect(() => {
-    getDevice();
-    getLocation();
-    startCompass();
-  }, []);
+    setCompass(compassValue);
+    console.log(compassValue);
+  }, [compassValue]);
 
   const handleCapture = (target) => {
     if (target.files) {
@@ -27,56 +25,19 @@ const Camera = () => {
         const file = target.files[0];
         const newUrl = URL.createObjectURL(file);
 
-        alert(`Degree when camera was taken: ${compass}`)
-
-        setImageSrc(newUrl);
-        setDegree(compass)
+        setImage(newUrl);
+        setCompass(compassValue);
         getLocation();
       }
     }
   };
 
-  const getDevice = () => {
-    let hasTouchScreen = false;
-    if ("maxTouchPoints" in navigator) {
-      hasTouchScreen = navigator.maxTouchPoints > 0;
-    } else if ("msMaxTouchPoints" in navigator) {
-      hasTouchScreen = navigator.msMaxTouchPoints > 0;
-    } else {
-      const mQ = window.matchMedia && matchMedia("(pointer:coarse)");
-      if (mQ && mQ.media === "(pointer:coarse)") {
-        hasTouchScreen = !!mQ.matches;
-      } else if ("orientation" in window) {
-        hasTouchScreen = true; // deprecated, but good fallback
-      } else {
-        // Only as a last resort, fall back to user agent sniffing
-        var UA = navigator.userAgent;
-        hasTouchScreen =
-          /\b(BlackBerry|webOS|iPhone|IEMobile)\b/i.test(UA) ||
-          /\b(Android|Windows Phone|iPad|iPod)\b/i.test(UA);
-      }
-    }
-    if (hasTouchScreen) {
-      setDeviceType("Mobile");
-    } else {
-      setDeviceType("Desktop");
-    }
-  };
-
   const handleLocation = (position) => {
-    alert(`Geolocation: ${position.coords}`)
-    setCoords(position.coords);
-  };
-
-  const handleOrientation = (event) => {
-    const { alpha } = event;
-    const compass = event.webkitCompassHeading || Math.abs(alpha - 360);
-
-    setCompass(compass);
+    setLongitude(position.coords.longitude);
+    setLatitude(position.coords.latitude);
   };
 
   const errors = (err) => {
-    setOutput(`ERROR(${err.code}): ${err.message}`);
     console.warn(`ERROR(${err.code}): ${err.message}`);
   };
 
@@ -109,69 +70,18 @@ const Camera = () => {
             console.log(result.state);
           };
         });
-      setIsGeolocationAvailable(true);
-    } else {
-      setIsGeolocationAvailable(false);
     }
-  };
-
-  const startCompass = () => {
-    if (deviceType === 'Mobile') {
-      DeviceOrientationEvent.requestPermission()
-        .then((response) => {
-          if (response === "granted") {
-            window.addEventListener("deviceorientation", handleOrientation, true);
-          } else {
-            alert("Device Orientation has to be allowed to get the compass direction!");
-          }
-        })
-        .catch(() => alert("Does not support device orientation..."));
-    } else {
-      window.addEventListener("deviceorientationabsolute", handleOrientation, true);
-    }
-  };
-
-  const resetData = () => {
-    setCoords(null);
-    setDegree(null);
-    setImageSrc(null);
   };
 
   return (
-    <div>
-      <p>Device Type: {deviceType}</p>
-      <img src={imageSrc} alt="No Uploaded Image" height="500" />
-      <input
-        accept="image/*"
-        id="icon-button-file"
-        type="file"
-        capture="environment"
-        onChange={(e) => handleCapture(e.target)}
-        disabled={deviceType === 'Desktop'}
-      />
-      {coords ? (
-        <div>
-          <h4>Coords:</h4>
-          <p>
-            {coords.longitude}, {coords.latitude}
-          </p>
-        </div>
-      ) : (
-        <div>Coords not available</div>
-      )}
-      {degree ? (
-        <div>
-          <h4>Degree:</h4>
-          <p>{degree}</p>
-        </div>
-      ) : (
-        <div>Compass direction not available</div>
-      )}
-      <div>{output}</div>
-      <div>Compass Direction: {compass}</div>
-      <button onClick={() => startCompass()}>Start Compass</button>
-      <button onClick={() => resetData()}>Reset</button>
-    </div>
+    <input
+      accept="image/*"
+      id="icon-button-file"
+      type="file"
+      capture="environment"
+      onChange={(e) => handleCapture(e.target)}
+      disabled={disabled}
+    />
   );
 };
 

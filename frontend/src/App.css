@@ -1,3 +1,55 @@
 #app {
   text-align: center;
+  margin: 15px 75px 75px 75px;
+}
+
+#app hr.h-top {
+  position: absolute;
+  width: 100%;
+  top: 75px;
+  left: -2.5px;
+}
+
+#app hr.h-bottom {
+  position: absolute;
+  width: 100%;
+  bottom: 75px;
+  left: -2.5px;
+}
+
+#app hr.v-left {
+  position: absolute;
+  height: 100%;
+  top: -10px;
+  left: 75px;
+}
+
+#app hr.v-right {
+  position: absolute;
+  height: 100%;
+  top: -10px;
+  right: 75px;
+}
+
+/* Smartphones (portrait and landscape) ----------- */
+@media only screen 
+and (min-device-width : 320px) 
+and (max-device-width : 480px) {
+  #app {
+    font-size: 0.75em;
+    margin: 15px;
+  }
+
+  #app hr.h-top, 
+  #app hr.h-bottom, 
+  #app hr.v-left, 
+  #app hr.v-right {
+    visibility: hidden;
+  }
+}
+
+/* iPads (portrait and landscape) ----------- */
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px) {
 }
