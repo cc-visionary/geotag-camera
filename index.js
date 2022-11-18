@@ -24,7 +24,8 @@ app.use(
     parameterLimit: 50000,
   })
 );
-app.use(bodyParser.json({ limit: "50mb" }));
+app.use(bodyParser.urlencoded({ limit: "50mb", extended: true, parameterLimit: 50000 }))
+app.use(bodyParser.json({ limit: "50mb" }))
 app.use(cookieParser());
 
 const db = require('./models/database');
@@ -36,13 +37,13 @@ const routes = require("./routes/api.js");
 // define the paths contained in `./routes/routes.js`
 app.use("/api", routes);
 
-// set the folder `build` as folder containing static assets
+// set the folder `public` as folder containing static assets
 // such as css, js, and image files
-app.use(express.static(path.resolve(__dirname, "./build")));
+app.use(express.static(path.resolve(__dirname, "./frontend/build")));
 
 // All other GET requests not handled before will return our React app
 app.get("*", (req, res) => {
-  res.sendFile(path.resolve(__dirname, "build", "index.html"));
+  res.sendFile(path.resolve(__dirname, "./frontend/build", "index.html"));
 });
 
 const port = process.env.PORT;
