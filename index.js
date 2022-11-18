@@ -39,11 +39,11 @@ app.use("/api", routes);
 
 // set the folder `public` as folder containing static assets
 // such as css, js, and image files
-app.use(express.static(path.resolve(__dirname, "./frontend/build")));
+app.use(express.static(path.resolve(__dirname, "./build")));
 
 // All other GET requests not handled before will return our React app
 app.get("*", (req, res) => {
-  res.sendFile(path.resolve(__dirname, "./frontend/build", "index.html"));
+  res.sendFile(path.resolve(__dirname, "build", "index.html"));
 });
 
 const port = process.env.PORT;
