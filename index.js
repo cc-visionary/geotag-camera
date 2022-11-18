@@ -9,7 +9,8 @@ require("dotenv").config();
 const app = express();
 
 // MIDDLEWARES
-// app.use(require("morgan")("tiny"));
+if(process.env.ENV && process.env.ENV === "development") 
+  app.use(require("morgan")("tiny"));
 
 const corsOptions = {
   origin: "http://localhost:8080",
