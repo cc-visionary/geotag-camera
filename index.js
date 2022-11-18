@@ -28,7 +28,7 @@ app.use(bodyParser.json({ limit: "50mb" }));
 app.use(cookieParser());
 
 const db = require('./models/database');
-db.connect(process.env.MONGODB_URL);
+// db.connect(process.env.MONGODB_URL);
 
 // import module `routes` from `./routes/routes.js`
 const routes = require("./routes/api.js");
