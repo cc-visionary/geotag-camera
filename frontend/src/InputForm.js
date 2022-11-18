@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from "react";
 
 import Camera from "./Camera";
 
+import ImageService from "./services/ImageService";
+
 import "./InputForm.css";
 
 const InputForm = () => {
@@ -10,6 +12,7 @@ const InputForm = () => {
   const [locationPermission, setLocationPermission] = useState(false);
   const [deviceOrientationPermission, setDeviceOrientationPermission] =
     useState(false);
+  const [timestamp, setTimestamp] = useState(null);
   const [image, setImage] = useState(null);
   const [longitude, setLongitude] = useState(null);
   const [latitude, setLatitude] = useState(null);
@@ -85,8 +88,7 @@ const InputForm = () => {
   };
 
   const handleOrientation = (event) => {
-    const { alpha } = event;
-    const compass = event.webkitCompassHeading || Math.abs(alpha - 360);
+    const compass = event.webkitCompassHeading;
 
     setDeviceOrientationPermission(true);
     setCompassValue(compass);
@@ -205,6 +207,64 @@ const InputForm = () => {
     ctx.fill();
   };
 
+  const validateFields = () => {
+    if (image === null) {
+      alert("Image cannot be empty...");
+      return false;
+    }
+    if (locationDescription === null || locationDescription === "") {
+      alert("Location description cannot be empty...");
+      return false;
+    }
+    if (weather === null || weather === "") {
+      alert("Weather cannot be empty...");
+      return false;
+    }
+    if (timestamp === null || timestamp === "") {
+      alert("Timestamp cannot be empty...");
+      return false;
+    }
+    if (longitude === null || longitude < 0) {
+      alert("Longitude cannot be empty...");
+      return false;
+    }
+    if (latitude === null || latitude < 0) {
+      alert("Latitude cannot be empty...");
+      return false;
+    }
+    if (compass === null || compass < 0 || compass > 360) {
+      alert("Compass can only be between 0 and 360...");
+      return false;
+    }
+    if (cameraType === null || cameraType === "") {
+      alert("Camera type cannot be empty...");
+      return false;
+    }
+    if (maskingPoints.length < 3) {
+      alert("Masking points has to be atleast 3...");
+      return false;
+    }
+    return true;
+  };
+
+  const handleUpload = () => {
+    if (validateFields()) {
+      const data = {
+        image,
+        locationDescription,
+        weather,
+        timestamp,
+        longitude,
+        latitude,
+        compass,
+        cameraType,
+        maskingPoints,
+      };
+
+      ImageService.addImage(data).then((result) => {});
+    }
+  };
+
   return (
     <div id="input-form">
       <div className="input">
@@ -233,7 +293,12 @@ const InputForm = () => {
       <div className="input">
         <label>Timestamp</label>
         <div className="input-area">
-          <input placeholder="Enter Date and Time" disabled />
+          <input
+            onChange={(e) => setTimestamp(e.target.value)}
+            value={timestamp}
+            type="datetime-local"
+            placeholder="Enter Date and Time"
+          />
         </div>
       </div>
       <div className="input">
@@ -241,12 +306,19 @@ const InputForm = () => {
         <div className="input-area">
           <Camera
             deviceType={deviceType}
+            setTimestamp={setTimestamp}
             setImage={setCapturedImage}
             setLongitude={setLongitude}
             setLatitude={setLatitude}
             compassValue={compassValue}
             setCompass={setCompass}
-            disabled={!(cameraPermission && locationPermission && deviceOrientationPermission)}
+            disabled={
+              !(
+                cameraPermission &&
+                locationPermission &&
+                deviceOrientationPermission
+              ) && deviceType === "Mobile"
+            }
           />
         </div>
       </div>
@@ -351,6 +423,9 @@ const InputForm = () => {
           ))}
         </div>
       </div>
+      <button onClick={() => handleUpload()} className="upload-button">
+        Upload
+      </button>
     </div>
   );
 };

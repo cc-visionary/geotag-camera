@@ -7,6 +7,7 @@ import React, { useEffect, useState } from "react";
  */
 
 const Camera = ({
+  setTimestamp,
   setImage,
   setLongitude,
   setLatitude,
@@ -18,9 +19,12 @@ const Camera = ({
     if (target.files) {
       if (target.files.length !== 0) {
         const file = target.files[0];
-        const newUrl = URL.createObjectURL(file);
 
+        const newUrl = URL.createObjectURL(file);
         setImage(newUrl);
+
+        const isoFormat = new Date().toISOString();
+        setTimestamp(isoFormat.slice(0, isoFormat.length - 1));
         setCompass(compassValue);
         getLocation();
       }

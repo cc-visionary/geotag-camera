@@ -8,6 +8,9 @@ require("dotenv").config();
 
 const app = express();
 
+// MIDDLEWARES
+app.use(require("morgan")("tiny"));
+
 const corsOptions = {
   origin: "http://localhost:8080",
   credentials: true,
@@ -23,6 +26,15 @@ app.use(
 );
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(cookieParser());
+
+const db = require('./models/database');
+db.connect(process.env.MONGODB_URL);
+
+// import module `routes` from `./routes/routes.js`
+const routes = require("./routes/api.js");
+
+// define the paths contained in `./routes/routes.js`
+app.use("/api", routes);
 
 // set the folder `build` as folder containing static assets
 // such as css, js, and image files
