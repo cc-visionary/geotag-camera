@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import exifr from 'exifr'
 
 import Camera from "./Camera";
 
@@ -22,6 +23,7 @@ const InputForm = () => {
   const [cameraType, setCameraType] = useState("Smartphone");
   const [maskingPoints, setMaskingPoints] = useState([]);
   const [compassValue, setCompassValue] = useState(null);
+  const [camera, setCamera] = useState(null);
 
   const canvasRef = useRef(null);
 
@@ -32,8 +34,12 @@ const InputForm = () => {
   const requestCamera = () => {
     navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
       stream.getVideoTracks().forEach(function (track) {
-        track.stop();
         setCameraPermission(true);
+        console.log(track.label)
+        console.log(track.getConstraints())
+        console.log(track.getSettings())
+        console.log(track.enabled)
+        track.stop()
       });
     });
   };
