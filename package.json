@@ -7,6 +7,9 @@
     "start": "node index.js",
     "dev": "nodemon index.js"
   },
+  "engines": {
+    "version": "16.x"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/cc-visionary/geotag-camera.git"

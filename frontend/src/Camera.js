@@ -1,5 +1,8 @@
 import React from "react";
 
+// EXIF parser: https://github.com/exif-js/exif-js
+import EXIF from 'exif-js'
+
 /**
  * Based from https://dev.to/orkhanjafarovr/real-compass-on-mobile-browsers-with-javascript-3emi
  *
@@ -19,9 +22,9 @@ const Camera = ({
     if (target.files) {
       if (target.files.length !== 0) {
         const file = target.files[0];
-
         const newUrl = URL.createObjectURL(file);
-        setImage(newUrl);
+
+        EXIF.getData(file, () => setImage(newUrl, EXIF.getAllTags(file)))
 
         const isoFormat = new Date().toISOString();
         setTimestamp(isoFormat.slice(0, isoFormat.length - 1));

@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from "react";
-import exifr from "exifr";
 
 import Camera from "./Camera";
 
@@ -125,13 +124,9 @@ const InputForm = () => {
     }
   };
 
-  const setCapturedImage = (img) => {
-    const im = new Image();
-    im.src = img;
-
-    exifr.parse(img).then((output) => setExif(output));
-
+  const setCapturedImage = (img, exif) => {
     setImage(img);
+    setExif(exif)
   };
 
   const validateFields = () => {
