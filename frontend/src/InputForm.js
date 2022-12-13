@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import exifr from 'exifr'
+import exifr from "exifr";
 
 import Camera from "./Camera";
 
@@ -24,6 +24,7 @@ const InputForm = () => {
   const [maskingPoints, setMaskingPoints] = useState([]);
   const [compassValue, setCompassValue] = useState(null);
   const [camera, setCamera] = useState(null);
+  const [exif, setExif] = useState(null);
 
   const canvasRef = useRef(null);
 
@@ -35,11 +36,7 @@ const InputForm = () => {
     navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
       stream.getVideoTracks().forEach(function (track) {
         setCameraPermission(true);
-        console.log(track.label)
-        console.log(track.getConstraints())
-        console.log(track.getSettings())
-        console.log(track.enabled)
-        track.stop()
+        track.stop();
       });
     });
   };
@@ -132,86 +129,9 @@ const InputForm = () => {
     const im = new Image();
     im.src = img;
 
-    im.onload = function () {
-      const canvas = canvasRef.current;
-      const ctx = canvas.getContext("2d");
+    exifr.parse(img).then((output) => setExif(output));
 
-      canvas.width = im.width;
-      canvas.height = im.height;
-
-      ctx.drawImage(im, 0, 0);
-    };
     setImage(img);
-    setMaskingPoints([]);
-  };
-
-  const handleCanvasClick = (e) => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    const xPos = e.clientX - canvas.getBoundingClientRect().x;
-    const yPos = e.clientY - canvas.getBoundingClientRect().y;
-    const currentHeight =
-      canvas.getBoundingClientRect().bottom -
-      canvas.getBoundingClientRect().top;
-    const currentWidth =
-      canvas.getBoundingClientRect().right -
-      canvas.getBoundingClientRect().left;
-    const hRatio = canvas.height / currentHeight;
-    const wRatio = canvas.width / currentWidth;
-    const scaledX = xPos * wRatio;
-    const scaledY = yPos * hRatio;
-    ctx.fillStyle = "rgb(255, 0, 0)";
-    ctx.fillRect(scaledX - 25, scaledY - 25, 50, 50);
-    setMaskingPoints([...maskingPoints, [xPos * wRatio, yPos * hRatio]]);
-  };
-
-  const undoMask = () => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-
-    const im = new Image();
-    im.src = image;
-
-    im.onload = () => {
-      canvas.width = im.width;
-      canvas.height = im.height;
-
-      ctx.drawImage(im, 0, 0);
-    };
-
-    ctx.fillStyle = "rgb(255, 0, 0)";
-    for (let i = 0; i < maskingPoints.length - 1; i++)
-      ctx.fillRect(maskingPoints[i][0] - 25, maskingPoints[i][1] - 25, 50, 50);
-
-    setMaskingPoints(maskingPoints.slice(0, maskingPoints.length - 1));
-  };
-
-  const clearMasks = () => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-
-    const im = new Image();
-    im.src = image;
-
-    im.onload = () => {
-      canvas.width = im.width;
-      canvas.height = im.height;
-
-      ctx.drawImage(im, 0, 0);
-    };
-    setMaskingPoints([]);
-  };
-
-  const drawPoly = () => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-
-    ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
-    ctx.moveTo(maskingPoints[0][0], maskingPoints[0][1]);
-    for (let i = 1; i < maskingPoints.length; i++)
-      ctx.lineTo(maskingPoints[i][0], maskingPoints[i][1]);
-    ctx.closePath();
-    ctx.fill();
   };
 
   const validateFields = () => {
@@ -389,46 +309,8 @@ const InputForm = () => {
           </select>
         </div>
       </div>
-      <div className="input">
-        <label>
-          Segment River
-          <button onClick={() => undoMask()} disabled={!image}>
-            Undo
-          </button>
-          <button onClick={() => clearMasks()} disabled={!image}>
-            Clear
-          </button>
-          <button
-            onClick={() => drawPoly()}
-            disabled={maskingPoints.length < 3 || !image}
-          >
-            Draw
-          </button>
-        </label>
-        <div className="input-area">
-          <canvas
-            width={0}
-            height={0}
-            ref={canvasRef}
-            onClick={(e) => handleCanvasClick(e)}
-          />
-        </div>
-      </div>
-      <div className="input">
-        <label>Masking Points ({maskingPoints.length})</label>
-        <div
-          className="input-area"
-          style={{ flexDirection: "column", alignItems: "flex-start" }}
-        >
-          {maskingPoints.map((val, i) => (
-            <div>
-              <span>Point {i + 1}: </span>
-              <input value={val[0]} placeholder="Enter x" disabled />
-              <span>,</span>
-              <input value={val[1]} placeholder="Enter y" disabled />
-            </div>
-          ))}
-        </div>
+      <div style={{'display': 'flex', 'flexWrap': 'wrap'}}>
+        {exif && Object.entries(exif).map(([key, val]) => <div style={{margin: '5px'}}>{key}: {typeof val == 'object' ? val.toLocaleString("en-US", {timeZone: 'Asia/Hong_Kong'}) : val} |</div>)}
       </div>
       <button onClick={() => handleUpload()} className="upload-button">
         Upload

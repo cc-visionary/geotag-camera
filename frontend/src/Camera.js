@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 /**
  * Based from https://dev.to/orkhanjafarovr/real-compass-on-mobile-browsers-with-javascript-3emi
@@ -77,7 +77,7 @@ const Camera = ({
       type="file"
       capture="environment"
       onChange={(e) => handleCapture(e.target)}
-      disabled={disabled}
+      // disabled={disabled}
     />
   );
 };
