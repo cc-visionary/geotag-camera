@@ -1,5 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 
+// EXIF parser: https://github.com/exif-js/exif-js
+import EXIF from "exif-js";
+
 import Camera from "./Camera";
 
 import ImageService from "./services/ImageService";
@@ -33,9 +36,11 @@ const InputForm = () => {
 
   const requestCamera = () => {
     navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
-      stream.getVideoTracks().forEach(function (track) {
-        setCameraPermission(true);
-        track.stop();
+      const track = stream.getVideoTracks()[0];
+      let imageCapture = new ImageCapture(track);
+      imageCapture.takePhoto().then((blob) => {
+        const newFile = new File([blob], "MyJPEG.jpg", { type: "image/jpeg" });
+        EXIF.getData(newFile, () => setExif(EXIF.getAllTags(newFile)));
       });
     });
   };
@@ -126,7 +131,7 @@ const InputForm = () => {
 
   const setCapturedImage = (img, exif) => {
     setImage(img);
-    setExif(exif)
+    setExif(exif);
   };
 
   const validateFields = () => {
@@ -304,8 +309,17 @@ const InputForm = () => {
           </select>
         </div>
       </div>
-      <div style={{'display': 'flex', 'flexWrap': 'wrap'}}>
-        {exif && Object.entries(exif).map(([key, val]) => <div style={{margin: '5px'}}>{key}: {typeof val == 'object' ? val.toLocaleString("en-US", {timeZone: 'Asia/Hong_Kong'}) : val} |</div>)}
+      <div style={{ display: "flex", flexWrap: "wrap" }}>
+        {exif &&
+          Object.entries(exif).map(([key, val]) => (
+            <div style={{ margin: "5px" }}>
+              {key}:{" "}
+              {typeof val == "object"
+                ? val.toLocaleString("en-US", { timeZone: "Asia/Hong_Kong" })
+                : val}{" "}
+              |
+            </div>
+          ))}
       </div>
       <button onClick={() => handleUpload()} className="upload-button">
         Upload
