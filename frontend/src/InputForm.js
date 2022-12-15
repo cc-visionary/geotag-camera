@@ -40,7 +40,10 @@ const InputForm = () => {
       let imageCapture = new ImageCapture(track);
       imageCapture.takePhoto().then((blob) => {
         const newFile = new File([blob], "MyJPEG.jpg", { type: "image/jpeg" });
-        EXIF.getData(newFile, () => setExif(EXIF.getAllTags(newFile)));
+        EXIF.getData(newFile, () => {
+          console.log(Object.entries(EXIF.getAllTags(newFile)).length);
+          setExif(EXIF.getAllTags(newFile));
+        });
       });
     });
   };
