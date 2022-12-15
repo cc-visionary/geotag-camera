@@ -1,0 +1,7 @@
+#input-form {
+  padding: 5px;
+}
+
+#input-form .clickable {
+  cursor: pointer;
+}

@@ -5,18 +5,17 @@ const { Schema } = mongoose;
 
 // defines the schema for collection `images`
 const ImageSchema = new Schema({
-  image: {
+  filename: {
     data: Schema.Types.Buffer,
     contentType: String,
   },
-  locationDescription: String,
+  exif: Schema.Types.Mixed,
+  description: String,
   weather: String,
   timestamp: String,
   longitude: Schema.Types.Decimal128,
   latitude: Schema.Types.Decimal128,
   compass: Schema.Types.Decimal128,
-  cameraType: String,
-  maskingPoints: Schema.Types.Array,
 });
 
 /*

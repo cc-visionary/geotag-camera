@@ -1,6 +1,6 @@
 import React from "react";
 
-import './Stepper.css';
+import '../styles/components/Stepper.css';
 
 const Stepper = () => {
   return (

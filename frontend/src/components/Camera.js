@@ -1,9 +1,8 @@
 import React from "react";
+import { Input } from "antd";
 
 // EXIF parser: https://github.com/exif-js/exif-js
-import EXIF from "exif-js";
-
-import Webcam from "react-webcam";
+import EXIF from 'exif-js'
 
 /**
  * Based from https://dev.to/orkhanjafarovr/real-compass-on-mobile-browsers-with-javascript-3emi
@@ -16,7 +15,7 @@ const Camera = ({
   setImage,
   setLongitude,
   setLatitude,
-  compassValue,
+  alpha,
   setCompass,
   disabled,
 }) => {
@@ -24,14 +23,13 @@ const Camera = ({
     if (target.files) {
       if (target.files.length !== 0) {
         const file = target.files[0];
-        console.log(file)
         const newUrl = URL.createObjectURL(file);
 
-        EXIF.getData(file, () => setImage(newUrl, EXIF.getAllTags(file)));
+        EXIF.getData(file, () => setImage(newUrl, EXIF.getAllTags(file)))
 
         const isoFormat = new Date().toISOString();
         setTimestamp(isoFormat.slice(0, isoFormat.length - 1));
-        setCompass(compassValue);
+        setCompass(alpha);
         getLocation();
       }
     }
@@ -77,14 +75,7 @@ const Camera = ({
   };
 
   return (
-    <input
-      accept="image/*;capture=camera"
-      id="icon-button-file"
-      type="file"
-      capture="environment"
-      onChange={(e) => handleCapture(e.target)}
-      // disabled={disabled}
-    />
+    <Input accept="image/*" type="file" capture='environment' onChange={(e) => handleCapture(e.target)} /* disabled={disabled} */ />
   );
 };
 
