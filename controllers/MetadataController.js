@@ -17,7 +17,9 @@ const MetadataController = {
       datetime,
       longitude,
       latitude,
-      compass
+      alpha,
+      beta,
+      gamma
     } = req.body;
 
     const img = {
@@ -27,7 +29,9 @@ const MetadataController = {
       datetime,
       longitude,
       latitude,
-      compass
+      alpha,
+      beta,
+      gamma
     };
 
     db.insertOne(Metadata, img, (result) => defaultCallback(res, result));

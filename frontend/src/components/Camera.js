@@ -11,7 +11,7 @@ import EXIF from "exif-js";
  * Customized by: Christopher Lim
  */
 
-const Camera = ({ alpha, form, disabled }) => {
+const Camera = ({ orientation, form, disabled }) => {
   const handleCapture = (target) => {
     if (target.files) {
       if (target.files.length !== 0) {
@@ -20,10 +20,12 @@ const Camera = ({ alpha, form, disabled }) => {
         // EXIF.getData(file);
 
         const current = moment();
+        form.setFieldValue("image", file);
         form.setFieldValue("date", current);
         form.setFieldValue("time", current);
-        form.setFieldValue("compass", alpha);
-        form.setFieldValue("image", file);
+        form.setFieldValue("alpha", orientation[0]);
+        form.setFieldValue("beta", orientation[1]);
+        form.setFieldValue("gamma", orientation[2]);
         getLocation();
       }
     }

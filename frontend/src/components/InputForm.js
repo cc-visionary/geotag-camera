@@ -146,9 +146,10 @@ const InputForm = () => {
               weather: values["weather"],
               longitude: values["longitude"],
               latitude: values["latitude"],
-              compass: values["compass"],
+              alpha: values["alpha"],
+              beta: values["beta"],
+              gamma: values["gamma"],
             };
-
             MetadataService.addMetadata(metadata)
               .then((r) => {
                 form.resetFields();
@@ -255,7 +256,7 @@ const InputForm = () => {
               rules={[{ required: true, message: "Image is required" }]}
             >
               <Camera
-                alpha={deviceOrientation ? deviceOrientation[0] : null}
+                orientation={deviceOrientation}
                 form={form}
                 disabled={
                   !(
@@ -298,19 +299,29 @@ const InputForm = () => {
             </Form.Item>
           </Col>
           <Col md={12} sm={24}>
-            <Form.Item
-              label="Compass Direction"
-              name="compass"
-              // rules={[{ required: true, message: "Compass is required" }]}
-            >
-              <Input
-                style={{ width: "75%" }}
-                placeholder="Degrees"
-                value={compass}
-                disabled={true}
-              />
-              degrees
-            </Form.Item>
+            <Input.Group>
+              <Form.Item
+                label="Compass Direction"
+                name="alpha"
+                rules={[{ required: true, message: "Alpha is required" }]}
+              >
+                <Input placeholder="Alpha" disabled={true} />
+              </Form.Item>
+              <Form.Item
+                label="Compass Direction"
+                name="beta"
+                rules={[{ required: true, message: "Beta is required" }]}
+              >
+                <Input placeholder="Beta" disabled={true} />
+              </Form.Item>
+              <Form.Item
+                label="Compass Direction"
+                name="gamma"
+                rules={[{ required: true, message: "Gamma is required" }]}
+              >
+                <Input placeholder="Gamma" disabled={true} />
+              </Form.Item>
+            </Input.Group>
           </Col>
         </Row>
         <Row gutter={[16, 16]}>
