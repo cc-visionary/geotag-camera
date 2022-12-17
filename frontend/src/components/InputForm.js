@@ -57,28 +57,22 @@ const InputForm = () => {
    * Triggered when user requests permission to access geolocation of device
    */
   const requestLocation = () => {
-    if (!navigator.geolocation) {
-      message.error("Device does not support geolocation");
-      return;
-    }
-    navigator.permissions.query({ name: "geolocation" }).then((result) => {
-      if (result.state === "prompt") {
-        navigator.geolocation.getCurrentPosition(
-          // Success function
-          (result) => {
-            setLocationPermission(true);
-          },
-          // Error function
-          null,
-          // Options. See MDN for details.
-          {
-            enableHighAccuracy: true,
-            timeout: 5000,
-            maximumAge: 0,
-          }
-        );
-      }
-    });
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        // Success function
+        (result) => {
+          setLocationPermission(true);
+        },
+        // Error function
+        null,
+        // Options. See MDN for details.
+        {
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 0,
+        }
+      );
+    } else message.error("Device does not support geolocation");
   };
 
   /**
@@ -86,24 +80,13 @@ const InputForm = () => {
    */
   const requestDeviceOrientation = () => {
     // start compass
-    if (deviceType === "Android") {
-      DeviceOrientationEvent.requestPermission()
-        .then((response) => {
-          if (response === "granted") {
-            setDeviceOrientationPermission(true);
-            window.addEventListener(
-              "deviceorientation",
-              handleOrientation,
-              true
-            );
-          } else {
-            message.error(
-              "Device Orientation has to be allowed to get the compass direction!"
-            );
-          }
-        })
-        .catch(() => message.error("Device does not support device orientation..."));
-    } else message.error("Device does not support device orientation...");
+    if (deviceType === "Android")
+      window.addEventListener(
+        "deviceorientationabsolute",
+        handleOrientation,
+        true
+      );
+    else message.error("Device is not supported...");
   };
 
   /**
@@ -277,8 +260,9 @@ const InputForm = () => {
                   !(
                     cameraPermission &&
                     locationPermission &&
-                    deviceOrientationPermission
-                  ) && deviceType !== "Android"
+                    deviceOrientationPermission &&
+                    deviceType !== "Android"
+                  )
                 }
               />
             </Form.Item>
