@@ -80,13 +80,14 @@ const InputForm = () => {
    */
   const requestDeviceOrientation = () => {
     // start compass
-    if (deviceType === "Android")
+    if (deviceType === "Android") {
       window.addEventListener(
         "deviceorientationabsolute",
         handleOrientation,
         true
       );
-    else message.error("Device is not supported...");
+      setDeviceOrientationPermission(true);
+    } else message.error("Device is not supported...");
   };
 
   /**
