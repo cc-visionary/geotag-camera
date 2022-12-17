@@ -97,6 +97,7 @@ const InputForm = () => {
   const handleOrientation = (event) => {
     const { alpha, beta, gamma } = event;
     const compass = event.webkitCompassHeading || Math.abs(alpha - 360);
+    console.log(compass, beta, gamma)
 
     setDeviceOrientation([compass, beta, gamma]);
   };
@@ -263,7 +264,7 @@ const InputForm = () => {
                     cameraPermission &&
                     locationPermission &&
                     deviceOrientationPermission &&
-                    deviceType !== "Android"
+                    deviceType === "Android"
                   )
                 }
               />
