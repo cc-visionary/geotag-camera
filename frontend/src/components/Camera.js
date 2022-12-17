@@ -1,8 +1,9 @@
 import React from "react";
 import { Input } from "antd";
+import moment from "moment";
 
 // EXIF parser: https://github.com/exif-js/exif-js
-import EXIF from 'exif-js'
+import EXIF from "exif-js";
 
 /**
  * Based from https://dev.to/orkhanjafarovr/real-compass-on-mobile-browsers-with-javascript-3emi
@@ -10,72 +11,50 @@ import EXIF from 'exif-js'
  * Customized by: Christopher Lim
  */
 
-const Camera = ({
-  setTimestamp,
-  setImage,
-  setLongitude,
-  setLatitude,
-  alpha,
-  setCompass,
-  disabled,
-}) => {
+const Camera = ({ alpha, form, disabled }) => {
   const handleCapture = (target) => {
     if (target.files) {
       if (target.files.length !== 0) {
         const file = target.files[0];
-        const newUrl = URL.createObjectURL(file);
 
-        EXIF.getData(file, () => setImage(newUrl, EXIF.getAllTags(file)))
+        // EXIF.getData(file);
 
-        const isoFormat = new Date().toISOString();
-        setTimestamp(isoFormat.slice(0, isoFormat.length - 1));
-        setCompass(alpha);
+        const current = moment();
+        form.setFieldValue("date", current);
+        form.setFieldValue("time", current);
+        form.setFieldValue("compass", alpha);
+        form.setFieldValue("image", file);
         getLocation();
       }
     }
   };
 
   const handleLocation = (position) => {
-    setLongitude(position.coords.longitude);
-    setLatitude(position.coords.latitude);
-  };
-
-  const errors = (err) => {
-    console.warn(`ERROR(${err.code}): ${err.message}`);
+    form.setFieldValue("longitude", position.coords.longitude);
+    form.setFieldValue("latitude", position.coords.latitude);
+    form.setFieldValue("accuracy", position.coords.accuracy);
   };
 
   const getLocation = () => {
+    // Options. See MDN for details.
     const options = {
       enableHighAccuracy: true,
       timeout: 5000,
       maximumAge: 0,
     };
     if ("geolocation" in navigator) {
-      navigator.permissions
-        .query({ name: "geolocation" })
-        .then(function (result) {
-          if (result.state === "granted") {
-            //If granted then you can directly call your function here
-            navigator.geolocation.getCurrentPosition(handleLocation);
-          } else if (result.state === "prompt") {
-            navigator.geolocation.getCurrentPosition(
-              handleLocation,
-              errors,
-              options
-            );
-          } else if (result.state === "denied") {
-            //If denied then you have to show instructions to enable location
-            console.log(result.state);
-          }
-          result.onchange = function () {
-            console.log(result.state);
-          };
-        });
+      navigator.geolocation.getCurrentPosition(handleLocation, null, options);
     }
   };
 
   return (
-    <Input accept="image/*" type="file" capture='environment' onChange={(e) => handleCapture(e.target)} /* disabled={disabled} */ />
+    <Input
+      accept="image/*"
+      capture="environment"
+      type="file"
+      onChange={(e) => handleCapture(e.target)}
+      disabled={disabled}
+    />
   );
 };
 

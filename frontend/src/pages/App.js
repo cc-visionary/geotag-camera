@@ -17,7 +17,7 @@ export default class App extends Component {
       <div>
         <div id="app">
           <Navbar />
-          <Stepper />
+          {/* <Stepper /> */}
           <InputForm />
         </div>
       </div>

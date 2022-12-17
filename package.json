@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/cc-visionary/geotag-camera#readme",
   "dependencies": {
+    "aws-sdk": "^2.1277.0",
     "body-parser": "^1.20.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",

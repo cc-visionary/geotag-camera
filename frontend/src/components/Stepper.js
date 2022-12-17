@@ -1,27 +1,18 @@
+import { Steps } from "antd";
 import React from "react";
 
-import '../styles/components/Stepper.css';
+import "../styles/components/Stepper.css";
 
 const Stepper = () => {
   return (
-    <div id="stepper">
-      <div class="steps">
-        <div class="back">Back</div>
-        <div class="step">
-          <p>1. Input</p>
-          <hr />
-        </div>
-        <div class="step">
-          <p>2. Feature Extraction</p>
-          <hr />
-        </div>
-        <div class="step">
-          <p>3. Results</p>
-          <hr />
-        </div>
-      </div>
-      <hr />
-    </div>
+    <Steps
+      current={0}
+      items={[
+        { title: "Input" },
+        { title: "Feature Extraction" },
+        { title: "Results" },
+      ]}
+    />
   );
 };
 

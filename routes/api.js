@@ -1,10 +1,13 @@
 const express = require('express');
 const router = express.Router();
 
-const ImageController = require('../controllers/ImageController');
+const MetadataController = require('../controllers/MetadataController');
+const S3Controller = require('../controllers/S3Controller');
 
-// Images API
-router.get('/images', ImageController.getAllImages);
-router.post('/images/add', ImageController.addImage);
+// Metadatas API
+router.get('/metadatas', MetadataController.getAllMetadatas);
+router.post('/metadatas/add', MetadataController.addMetadata);
+
+router.post('/s3/presigned_url', S3Controller.generatePreSignedPutUrl)
 
 module.exports = router;

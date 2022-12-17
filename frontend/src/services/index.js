@@ -1,3 +1,4 @@
-import ImageService from "./ImageService";
+import MetadataService from "./MetadataService";
+import S3Service from "./S3Service";
 
-export { ImageService };
+export { MetadataService, S3Service };
