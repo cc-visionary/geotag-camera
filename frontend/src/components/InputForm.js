@@ -160,6 +160,9 @@ const InputForm = () => {
             MetadataService.addMetadata(metadata)
               .then((r) => {
                 form.resetFields();
+                form.setFieldsValue({
+                  weather: "Sunny",
+                });
                 message.success("Image has successfully been uploaded");
                 setIsLoading(false);
               })
