@@ -10,8 +10,13 @@ import {
   Select,
   TimePicker,
   message,
+  Spin,
 } from "antd";
-import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
+import {
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  LoadingOutlined,
+} from "@ant-design/icons";
 import { green, red } from "@ant-design/colors";
 
 import { Camera } from ".";
@@ -20,18 +25,18 @@ import { MetadataService, S3Service } from "../services";
 import "../styles/components/InputForm.css";
 
 const InputForm = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const [deviceType, setDeviceType] = useState(null);
   const [cameraPermission, setCameraPermission] = useState(false);
   const [locationPermission, setLocationPermission] = useState(false);
   const [deviceOrientationPermission, setDeviceOrientationPermission] =
     useState(false);
-  const [compass, setCompass] = useState(null);
   const [deviceOrientation, setDeviceOrientation] = useState(null);
-  const [exif, setExif] = useState(null);
 
   const [form] = Form.useForm();
 
   useEffect(() => {
+    setIsLoading(false);
     setDeviceType(getDeviceType());
     form.setFieldsValue({
       weather: "Sunny",
@@ -97,7 +102,6 @@ const InputForm = () => {
   const handleOrientation = (event) => {
     const { alpha, beta, gamma } = event;
     const compass = event.webkitCompassHeading || Math.abs(alpha - 360);
-    console.log(compass, beta, gamma)
 
     setDeviceOrientation([compass, beta, gamma]);
   };
@@ -129,6 +133,8 @@ const InputForm = () => {
      *    3. detect if near river or not
      *    4. other checks
      */
+    setIsLoading(true);
+
     const directory = "data_gathering";
     const fileType = values["image"].name.split(".")[1];
     const fileName = Math.random().toString(16).slice(2) + `.${fileType}`;
@@ -154,12 +160,23 @@ const InputForm = () => {
             MetadataService.addMetadata(metadata)
               .then((r) => {
                 form.resetFields();
+                message.success("Image has successfully been uploaded");
+                setIsLoading(false);
               })
-              .catch((err) => message.error(err.response.data.error.message));
+              .catch((err) => {
+                message.error(err.response.data.error.message);
+                setIsLoading(false);
+              });
           })
-          .catch(() => message.error("Error uploading image to S3"));
+          .catch(() => {
+            message.error("Error uploading image to S3");
+            setIsLoading(false);
+          });
       })
-      .catch(() => message.error("Error generating pre-signed URL for S3"));
+      .catch(() => {
+        message.error("Error generating pre-signed URL for S3");
+        setIsLoading(false);
+      });
   };
 
   return (
@@ -171,193 +188,197 @@ const InputForm = () => {
           type="error"
         />
       ) : null}
-      <Form form={form} layout="vertical" onFinish={onFinish}>
-        <Row gutter={[16, 16]}>
-          <Col md={12} sm={24}>
-            <Form.Item label="Permissions">
-              <Button
-                onClick={() => requestCamera()}
-                icon={
-                  cameraPermission ? (
-                    <CheckCircleOutlined />
-                  ) : (
-                    <CloseCircleOutlined />
-                  )
-                }
-                type="primary"
-                style={{
-                  background: cameraPermission ? green.primary : red.primary,
-                }}
-                disabled={cameraPermission}
+      <Spin
+        spinning={isLoading}
+        indicator={<LoadingOutlined style={{ fontSize: 36 }} spin />}
+        tip="Uploading"
+        size="large"
+      >
+        <Form form={form} layout="vertical" onFinish={onFinish}>
+          <Row gutter={[16, 16]}>
+            <Col md={12} sm={24}>
+              <Form.Item label="Permissions">
+                <Button
+                  onClick={() => requestCamera()}
+                  icon={
+                    cameraPermission ? (
+                      <CheckCircleOutlined />
+                    ) : (
+                      <CloseCircleOutlined />
+                    )
+                  }
+                  type="primary"
+                  style={{
+                    background: cameraPermission ? green.primary : red.primary,
+                  }}
+                  disabled={cameraPermission}
+                >
+                  Camera
+                </Button>
+                <Button
+                  onClick={() => requestLocation()}
+                  icon={
+                    locationPermission ? (
+                      <CheckCircleOutlined />
+                    ) : (
+                      <CloseCircleOutlined />
+                    )
+                  }
+                  type="primary"
+                  style={{
+                    background: locationPermission
+                      ? green.primary
+                      : red.primary,
+                  }}
+                  disabled={locationPermission}
+                >
+                  Location
+                </Button>
+                <Button
+                  onClick={() => requestDeviceOrientation()}
+                  icon={
+                    deviceOrientationPermission ? (
+                      <CheckCircleOutlined />
+                    ) : (
+                      <CloseCircleOutlined />
+                    )
+                  }
+                  type="primary"
+                  style={{
+                    background: deviceOrientationPermission
+                      ? green.primary
+                      : red.primary,
+                  }}
+                  disabled={deviceOrientationPermission}
+                >
+                  Orientation
+                </Button>
+              </Form.Item>
+            </Col>
+            <Col md={12} sm={24}>
+              <Form.Item label="Date and Time">
+                <Input.Group compact>
+                  <Form.Item
+                    name="date"
+                    rules={[{ required: true, message: "Date is required" }]}
+                  >
+                    <DatePicker disabled />
+                  </Form.Item>
+                  <Form.Item
+                    name="time"
+                    rules={[{ required: true, message: "Time is required" }]}
+                  >
+                    <TimePicker disabled />
+                  </Form.Item>
+                </Input.Group>
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={[16, 16]}>
+            <Col md={12} sm={24}>
+              <Form.Item
+                label="Image"
+                name="image"
+                rules={[{ required: true, message: "Image is required" }]}
               >
-                Camera
-              </Button>
-              <Button
-                onClick={() => requestLocation()}
-                icon={
-                  locationPermission ? (
-                    <CheckCircleOutlined />
-                  ) : (
-                    <CloseCircleOutlined />
-                  )
-                }
-                type="primary"
-                style={{
-                  background: locationPermission ? green.primary : red.primary,
-                }}
-                disabled={locationPermission}
+                <Camera
+                  orientation={deviceOrientation}
+                  form={form}
+                  disabled={
+                    !(
+                      cameraPermission &&
+                      locationPermission &&
+                      deviceOrientationPermission &&
+                      deviceType === "Android"
+                    )
+                  }
+                />
+              </Form.Item>
+            </Col>
+            <Col md={12} sm={24}>
+              <Form.Item label="Geolocation Coordinates">
+                <Input.Group compact>
+                  <Form.Item
+                    name="longitude"
+                    rules={[
+                      { required: true, message: "Longitude is required" },
+                    ]}
+                  >
+                    <Input placeholder="Longitude" disabled />
+                  </Form.Item>
+                  <Form.Item
+                    name="latitude"
+                    rules={[
+                      { required: true, message: "Latitude is required" },
+                    ]}
+                  >
+                    <Input placeholder="Latitude" disabled />
+                  </Form.Item>
+                </Input.Group>
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={[16, 16]}>
+            <Col md={12} sm={24}>
+              <Form.Item
+                label="Description"
+                name="description"
+                rules={[{ required: true, message: "Description is required" }]}
               >
-                Location
-              </Button>
-              <Button
-                onClick={() => requestDeviceOrientation()}
-                icon={
-                  deviceOrientationPermission ? (
-                    <CheckCircleOutlined />
-                  ) : (
-                    <CloseCircleOutlined />
-                  )
-                }
-                type="primary"
-                style={{
-                  background: deviceOrientationPermission
-                    ? green.primary
-                    : red.primary,
-                }}
-                disabled={deviceOrientationPermission}
-              >
-                Orientation
-              </Button>
-            </Form.Item>
-          </Col>
-          <Col md={12} sm={24}>
-            <Form.Item label="Date and Time">
+                <Input placeholder="Enter description of location" />
+              </Form.Item>
+            </Col>
+            <Col md={12} sm={24}>
+                <Form.Item
+                  label="Compass Direction"
+                  rules={[{ required: true, message: "Alpha is required" }]}
+                >
               <Input.Group compact>
                 <Form.Item
-                  name="date"
-                  rules={[{ required: true, message: "Date is required" }]}
+                  name="alpha"
+                  rules={[{ required: true, message: "Alpha is required" }]}
                 >
-                  <DatePicker disabled />
+                  <Input placeholder="Alpha" disabled={true} />
                 </Form.Item>
                 <Form.Item
-                  name="time"
-                  rules={[{ required: true, message: "Time is required" }]}
+                  name="beta"
+                  rules={[{ required: true, message: "Beta is required" }]}
                 >
-                  <TimePicker disabled />
+                  <Input placeholder="Beta" disabled={true} />
+                </Form.Item>
+                <Form.Item
+                  name="gamma"
+                  rules={[{ required: true, message: "Gamma is required" }]}
+                >
+                  <Input placeholder="Gamma" disabled={true} />
                 </Form.Item>
               </Input.Group>
-            </Form.Item>
-          </Col>
-        </Row>
-        <Row gutter={[16, 16]}>
-          <Col md={12} sm={24}>
-            <Form.Item
-              label="Image"
-              name="image"
-              rules={[{ required: true, message: "Image is required" }]}
-            >
-              <Camera
-                orientation={deviceOrientation}
-                form={form}
-                disabled={
-                  !(
-                    cameraPermission &&
-                    locationPermission &&
-                    deviceOrientationPermission &&
-                    deviceType === "Android"
-                  )
-                }
-              />
-            </Form.Item>
-          </Col>
-          <Col md={12} sm={24}>
-            <Form.Item label="Geolocation Coordinates">
-              <Input.Group compact>
-                <Form.Item
-                  name="longitude"
-                  rules={[{ required: true, message: "Longitude is required" }]}
-                >
-                  <Input placeholder="Longitude" disabled />
                 </Form.Item>
-                <Form.Item
-                  name="latitude"
-                  rules={[{ required: true, message: "Latitude is required" }]}
-                >
-                  <Input placeholder="Latitude" disabled />
-                </Form.Item>
-              </Input.Group>
-            </Form.Item>
-          </Col>
-        </Row>
-        <Row gutter={[16, 16]}>
-          <Col md={12} sm={24}>
-            <Form.Item
-              label="Description"
-              name="description"
-              rules={[{ required: true, message: "Description is required" }]}
-            >
-              <Input placeholder="Enter description of location" />
-            </Form.Item>
-          </Col>
-          <Col md={12} sm={24}>
-            <Input.Group>
+            </Col>
+          </Row>
+          <Row gutter={[16, 16]}>
+            <Col md={12} sm={24}>
               <Form.Item
-                label="Compass Direction"
-                name="alpha"
-                rules={[{ required: true, message: "Alpha is required" }]}
+                label="Weather"
+                name="weather"
+                rules={[{ required: true, message: "Weather is required" }]}
               >
-                <Input placeholder="Alpha" disabled={true} />
+                <Select defaultValue="Cloudy">
+                  <Select.Option value="Cloudy">Cloudy</Select.Option>
+                  <Select.Option value="Sunny">Sunny</Select.Option>
+                </Select>
               </Form.Item>
-              <Form.Item
-                label="Compass Direction"
-                name="beta"
-                rules={[{ required: true, message: "Beta is required" }]}
-              >
-                <Input placeholder="Beta" disabled={true} />
+            </Col>
+            <Col md={12} sm={24}>
+              <Form.Item label="Submit">
+                <Button type="primary" htmlType="submit">
+                  Upload
+                </Button>
               </Form.Item>
-              <Form.Item
-                label="Compass Direction"
-                name="gamma"
-                rules={[{ required: true, message: "Gamma is required" }]}
-              >
-                <Input placeholder="Gamma" disabled={true} />
-              </Form.Item>
-            </Input.Group>
-          </Col>
-        </Row>
-        <Row gutter={[16, 16]}>
-          <Col md={12} sm={24}>
-            <Form.Item
-              label="Weather"
-              name="weather"
-              rules={[{ required: true, message: "Weather is required" }]}
-            >
-              <Select defaultValue="Cloudy">
-                <Select.Option value="Cloudy">Cloudy</Select.Option>
-                <Select.Option value="Sunny">Sunny</Select.Option>
-              </Select>
-            </Form.Item>
-          </Col>
-          <Col md={12} sm={24}>
-            <Form.Item label="Submit">
-              <Button type="primary" htmlType="submit">
-                Upload
-              </Button>
-            </Form.Item>
-          </Col>
-        </Row>
-        <div style={{ display: "flex", flexWrap: "wrap" }}>
-          {exif &&
-            Object.entries(exif).map(([key, val]) => (
-              <div style={{ margin: "5px" }}>
-                {key}:{" "}
-                {typeof val == "object"
-                  ? val.toLocaleString("en-US", { timeZone: "Asia/Hong_Kong" })
-                  : val}{" "}
-              </div>
-            ))}
-        </div>
-      </Form>
+            </Col>
+          </Row>
+        </Form>
+      </Spin>
     </div>
   );
 };
