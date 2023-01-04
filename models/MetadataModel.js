@@ -30,15 +30,7 @@ const MetadataSchema = new Schema({
     type: Schema.Types.Decimal128,
     required: true,
   },
-  alpha: {
-    type: Schema.Types.Decimal128,
-    required: true,
-  },
-  beta: {
-    type: Schema.Types.Decimal128,
-    required: true,
-  },
-  gamma: {
+  compass: {
     type: Schema.Types.Decimal128,
     required: true,
   },

@@ -27,11 +27,15 @@ import "../styles/components/InputForm.css";
 const InputForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [deviceType, setDeviceType] = useState(null);
+
+  // permissions are set to false by default
   const [cameraPermission, setCameraPermission] = useState(false);
   const [locationPermission, setLocationPermission] = useState(false);
   const [deviceOrientationPermission, setDeviceOrientationPermission] =
     useState(false);
-  const [deviceOrientation, setDeviceOrientation] = useState(null);
+
+  // 0 - not taking a picture | 1 - tracking compass
+  const [isTakingCompass, setIsTakingCompass] = useState(false);
 
   const [form] = Form.useForm();
 
@@ -100,10 +104,10 @@ const InputForm = () => {
    * - Updates alpha, beta, and gamma values
    */
   const handleOrientation = (event) => {
-    const { alpha, beta, gamma } = event;
+    const { alpha } = event;
     const compass = event.webkitCompassHeading || Math.abs(alpha - 360);
 
-    setDeviceOrientation([compass, beta, gamma]);
+    if (isTakingCompass) form.setFieldValue("compass", compass);
   };
 
   /**
@@ -141,11 +145,12 @@ const InputForm = () => {
 
     S3Service.getPresignedURL(directory + "/" + fileName, fileType)
       .then((result) => {
-        // retrieves the URL
+        // retrieves the pre-signed URLs to be able to upload the image (securely)
         const { presigned_url } = result.data;
 
         S3Service.uploadImage(presigned_url, values["image"])
           .then(() => {
+            // if successful, upload the metadata to mongodb
             const metadata = {
               filename: fileName,
               datetime: values["date"].toISOString(),
@@ -153,9 +158,7 @@ const InputForm = () => {
               weather: values["weather"],
               longitude: values["longitude"],
               latitude: values["latitude"],
-              alpha: values["alpha"],
-              beta: values["beta"],
-              gamma: values["gamma"],
+              compass: values["compass"],
             };
             MetadataService.addMetadata(metadata)
               .then((r) => {
@@ -285,7 +288,6 @@ const InputForm = () => {
                 rules={[{ required: true, message: "Image is required" }]}
               >
                 <Camera
-                  orientation={deviceOrientation}
                   form={form}
                   disabled={
                     !(
@@ -332,31 +334,20 @@ const InputForm = () => {
               </Form.Item>
             </Col>
             <Col md={12} sm={24}>
-                <Form.Item
-                  label="Compass Direction"
-                  rules={[{ required: true, message: "Alpha is required" }]}
-                >
               <Input.Group compact>
                 <Form.Item
-                  name="alpha"
-                  rules={[{ required: true, message: "Alpha is required" }]}
+                  name="compass"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Compass Direction is required",
+                    },
+                  ]}
                 >
-                  <Input placeholder="Alpha" disabled={true} />
+                  <Input placeholder="Degrees" disabled={true} />
                 </Form.Item>
-                <Form.Item
-                  name="beta"
-                  rules={[{ required: true, message: "Beta is required" }]}
-                >
-                  <Input placeholder="Beta" disabled={true} />
-                </Form.Item>
-                <Form.Item
-                  name="gamma"
-                  rules={[{ required: true, message: "Gamma is required" }]}
-                >
-                  <Input placeholder="Gamma" disabled={true} />
-                </Form.Item>
+                <Button onClick={() => setIsTakingCompass(!isTakingCompass)} disabled={!deviceOrientationPermission}>{isTakingCompass ? "Stop" : "Start" }</Button>
               </Input.Group>
-                </Form.Item>
             </Col>
           </Row>
           <Row gutter={[16, 16]}>
