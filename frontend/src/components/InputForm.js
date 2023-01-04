@@ -11,6 +11,7 @@ import {
   TimePicker,
   message,
   Spin,
+  InputNumber,
 } from "antd";
 import {
   CheckCircleOutlined,
@@ -336,6 +337,7 @@ const InputForm = () => {
             <Col md={12} sm={24}>
               <Input.Group compact>
                 <Form.Item
+                  label="Compass Direciton"
                   name="compass"
                   rules={[
                     {
@@ -344,9 +346,9 @@ const InputForm = () => {
                     },
                   ]}
                 >
-                  <Input placeholder="Degrees" disabled={true} />
+                  <InputNumber placeholder="Degrees" min={0} max={359.9} />
                 </Form.Item>
-                <Button onClick={() => setIsTakingCompass(!isTakingCompass)} disabled={!deviceOrientationPermission}>{isTakingCompass ? "Stop" : "Start" }</Button>
+                {/* <Button onClick={() => setIsTakingCompass(!isTakingCompass)} disabled={!deviceOrientationPermission}>{isTakingCompass ? "Stop" : "Start" }</Button> */}
               </Input.Group>
             </Col>
           </Row>
