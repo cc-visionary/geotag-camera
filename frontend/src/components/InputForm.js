@@ -96,7 +96,7 @@ const InputForm = () => {
         handleOrientation,
         true
       );
-      setDeviceOrientationPermission(true)
+      setDeviceOrientationPermission(true);
     } else message.error("Device is not supported...");
   };
 
@@ -108,8 +108,8 @@ const InputForm = () => {
     const { alpha, webkitCompassHeading } = event;
     const compass = webkitCompassHeading || Math.abs(alpha - 360);
 
-    console.log(compass)
-    form.setFieldValue("compass", compass);
+    console.log(compass);
+    if(isTakingCompass) form.setFieldValue("compass", compass);
   };
 
   /**
@@ -336,18 +336,19 @@ const InputForm = () => {
               </Form.Item>
             </Col>
             <Col md={12} sm={24}>
-              <Form.Item
-                label="Compass Direction"
-                name="compass"
-                rules={[
-                  {
-                    required: true,
-                    message: "Compass Direction is required",
-                  },
-                ]}
-              >
+              <Form.Item label="Compass Direction">
                 <Input.Group compact>
-                  <InputNumber placeholder="Degrees" min={0} max={359.9} />
+                  <Form.Item
+                    name="compass"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Compass Direction is required",
+                      },
+                    ]}
+                  >
+                    <InputNumber placeholder="Degrees" min={0} max={359.9} disabled />
+                  </Form.Item>
                   <Button
                     onClick={() => setIsTakingCompass(!isTakingCompass)}
                     disabled={!deviceOrientationPermission}
