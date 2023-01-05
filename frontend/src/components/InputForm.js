@@ -109,6 +109,7 @@ const InputForm = () => {
     const compass = webkitCompassHeading || Math.abs(alpha - 360);
 
     console.log(compass);
+    console.log(isTakingCompass)
     if(isTakingCompass) form.setFieldValue("compass", compass);
   };
 
