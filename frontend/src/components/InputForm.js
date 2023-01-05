@@ -35,8 +35,7 @@ const InputForm = () => {
   const [deviceOrientationPermission, setDeviceOrientationPermission] =
     useState(false);
 
-  // 0 - not taking a picture | 1 - tracking compass
-  const [isTakingCompass, setIsTakingCompass] = useState(false);
+  const [compass, setCompass] = useState(null)
 
   const [form] = Form.useForm();
 
@@ -108,9 +107,7 @@ const InputForm = () => {
     const { alpha, webkitCompassHeading } = event;
     const compass = webkitCompassHeading || Math.abs(alpha - 360);
 
-    console.log(compass);
-    console.log(isTakingCompass)
-    if(isTakingCompass) form.setFieldValue("compass", compass);
+    setCompass(compass)
   };
 
   /**
@@ -337,7 +334,7 @@ const InputForm = () => {
               </Form.Item>
             </Col>
             <Col md={12} sm={24}>
-              <Form.Item label="Compass Direction">
+              <Form.Item label={`Compass Direction (${compass})`}>
                 <Input.Group compact>
                   <Form.Item
                     name="compass"
@@ -348,13 +345,13 @@ const InputForm = () => {
                       },
                     ]}
                   >
-                    <InputNumber placeholder="Degrees" min={0} max={359.9} disabled />
+                    <InputNumber placeholder="Degrees" min={0} max={359.99} disabled />
                   </Form.Item>
                   <Button
-                    onClick={() => setIsTakingCompass(!isTakingCompass)}
+                    onClick={() => form.setFieldValue("compass", compass)}
                     disabled={!deviceOrientationPermission}
                   >
-                    {isTakingCompass ? "Stop" : "Start"}
+                    Capture
                   </Button>
                 </Input.Group>
               </Form.Item>
