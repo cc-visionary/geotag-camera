@@ -96,18 +96,19 @@ const InputForm = () => {
         handleOrientation,
         true
       );
-      setDeviceOrientationPermission(true);
+      setDeviceOrientationPermission(true)
     } else message.error("Device is not supported...");
   };
 
   /**
    * Handles Device Orientation
-   * - Updates alpha, beta, and gamma values
+   * - Updates alpha value (compass)
    */
   const handleOrientation = (event) => {
-    const { alpha } = event;
-    const compass = event.webkitCompassHeading || Math.abs(alpha - 360);
+    const { alpha, webkitCompassHeading } = event;
+    const compass = webkitCompassHeading || Math.abs(alpha - 360);
 
+    console.log(compass)
     if (isTakingCompass) form.setFieldValue("compass", compass);
   };
 
@@ -335,21 +336,26 @@ const InputForm = () => {
               </Form.Item>
             </Col>
             <Col md={12} sm={24}>
-              <Input.Group compact>
-                <Form.Item
-                  label="Compass Direciton"
-                  name="compass"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Compass Direction is required",
-                    },
-                  ]}
-                >
+              <Form.Item
+                label="Compass Direction"
+                name="compass"
+                rules={[
+                  {
+                    required: true,
+                    message: "Compass Direction is required",
+                  },
+                ]}
+              >
+                <Input.Group compact>
                   <InputNumber placeholder="Degrees" min={0} max={359.9} />
-                </Form.Item>
-                {/* <Button onClick={() => setIsTakingCompass(!isTakingCompass)} disabled={!deviceOrientationPermission}>{isTakingCompass ? "Stop" : "Start" }</Button> */}
-              </Input.Group>
+                  <Button
+                    onClick={() => setIsTakingCompass(!isTakingCompass)}
+                    disabled={!deviceOrientationPermission}
+                  >
+                    {isTakingCompass ? "Stop" : "Start"}
+                  </Button>
+                </Input.Group>
+              </Form.Item>
             </Col>
           </Row>
           <Row gutter={[16, 16]}>
